@@ -1,0 +1,47 @@
+<h1> Welcome <%=@user.name%>!</h1>
+
+
+<a href="/main">logout</a><br>
+
+
+<form class="" action="/create_bright_ideas" method="post">
+  <input  name="authenticity_token" value="<%= form_authenticity_token %>" type='hidden'>
+
+  <textarea name="idea" rows="8" cols="80"></textarea>
+  <input type="submit" name="Idea" value="idea">
+
+</form>
+
+
+<% @bright_ideas.each do |idea| %>
+
+<h2> <a href="/users/<%=@user.id%>"><%=idea.user.name%></a> says:  <%=idea.content%><br></h2>
+<% if idea.user_id == session[:user_id]%>
+    <form action="/delete/<%=idea.id%>" method="post">
+      <input name="authenticity_token" type="hidden" value="<%=form_authenticity_token%>">
+      <a href="#"><button type="submit">Delete</button> </a>
+    </form>
+    <form action="/like/<%=idea.id%>"method="post">
+      <a href="#"><button type="submit">Like</button> </a>
+    <a href="/bright_ideas/<%=idea.id%>"><%=idea.likes.count%>likes</a>
+
+    </form>
+  <%else%>
+    <%if Like.where(user_id:session[:user_id], post_id:idea.id).empty? %>
+          <form  action="/like/<%=idea.id%>" method="post">
+            <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
+            <button style="border:3px solid green; color:green;" type="submit" name="button">Like</button>
+            <a href="/bright_ideas/<%=idea.id%>"><%=idea.likes.count%>likes</a>
+
+          </form>
+        <%else%>
+            <form  action="/unlike/<%=idea.id%>" method="post">
+              <input name="authenticity_token" type="hidden" value="<%=form_authenticity_token%>">
+              <button style="border:3px solid red; color:red;" type="submit" name="button">Unlike</button>
+              <a href="/bright_ideas/<%=idea.id%>"><%=idea.likes.count%>likes</a>
+              
+
+            </form>
+          <%end%>
+        <%end%>
+    <%end%>
